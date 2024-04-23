@@ -6,25 +6,26 @@ import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import DefaultImage from "../default-placeholder.png";
 import SubUserNav from "../components/SubUserNav";
+import { serverURL } from "../serverURL";
 
 type Props = {};
 
 interface Sketch {
-  _id: String | null | undefined;
-  name: String;
-  owner: any;
-  comment: String;
-  url: String | File;
+  _id: string ;
+  name: string;
+  owner: string;
+  comment: string;
+  url: string | File;
   likes: [];
   comments: [];
 }
 
 interface User {
-  _id: String | null | undefined;
-  email: String;
-  username: String;
-  password: String;
-  info: String;
+  _id: string | Blob | undefined;
+  email: string;
+  username: string;
+  password: string;
+  info: string;
   sketchs: [];
   likes: [];
   comments: [];
@@ -49,7 +50,7 @@ const MySketchs = (props: Props) => {
   const [formData, setFormData] = useState({
     name: "",
     comment: "",
-    owner: "",
+    owner: user?._id,
     url: "",
   });
 
@@ -58,24 +59,29 @@ const MySketchs = (props: Props) => {
   const getUserById = async () => {
     //  console.log('id :>> ', id);
     const id = user?._id;
-    setID(id);
-    try {
+    if(id !== undefined){ try {
+     
       const response = await fetch(`${process.env.REACT_APP_BASE_URL}users/id/${id}`);
       const result = await response.json();
-
       setActiveUser(result);
+       setFormData({ ...formData, "owner": user?._id} );
     } catch (error) {
       console.log(error);
-    }
+    }}
+   
   };
   useEffect(() => {
     getUserById();
   }, [user, SketchCard]);
 
+    // console.log('process.env.REACT_APP_BASE_URL :>> ', process.env.REACT_APP_BASE_URL);
   ////////////////////////////////////////////////////////////////////////////////// HANDLE CHANGE ON MODAL IMPUTS
   const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    console.log("formData :>> ", formData);
+    ID === undefined ? setID(formData.owner) : setID(formData.owner);
+    console.log("formData :>> ", formData); console.log('ID :>> ', ID);
+    
+    
   };
 
   //////////////////////////////////////////////////////////////////////////////////// HANDLE SUBMIT - SAVE A NEEW SKETCH
@@ -94,7 +100,7 @@ const MySketchs = (props: Props) => {
     submitData.append("comment", formData.comment);
     submitData.append("owner", ID);
     submitData.append("url", formData.url);
-   
+   console.log('submitData :>> ', submitData);
     //////  OPTION BODY
     const requestOptions = {
       method: "POST",
@@ -110,9 +116,10 @@ const MySketchs = (props: Props) => {
 //     console.log('requestOptions.body :>> ', requestOptions.body);
 
 
-    /// FETCH
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BASE_URL}sketches/new`,requestOptions );
+      /// FETCH
+      console.log('process.env.REACT_APP_BASE_URL :>> ', process.env.REACT_APP_BASE_URL);
+      try {
+      const response = await fetch(`${serverURL}sketches/new`,requestOptions );
       const result = await response.json();
       console.log(result);
       alert("Success!!! Your new Sketch is uploaded in our data base");

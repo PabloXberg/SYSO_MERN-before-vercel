@@ -2,11 +2,11 @@ import { ReactNode, createContext, useEffect, useState } from "react"
 
 
 interface User {
-  _id:  String | null | undefined
+  _id:  string,
   email?: string,
   username: string,
   avatar: string,
-  sketchs: string[],
+  sketchs: string[], 
   likes: string[],
   comments: string[],
   info:string
@@ -19,7 +19,7 @@ interface fetchResult {
 }
 
 interface fetchFailed {
-  error: string
+  error: String
 }
 
 interface AuthContextType {
